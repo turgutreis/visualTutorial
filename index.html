@@ -15,7 +15,7 @@
     var body = d3.select("body");
     var p = body.append("p");
 
-    var dataset = [25, 7, 5, 26, 11];
+    var dataset = [15, 7, 5, 15, 11];
     var dataset2 = [25, 7, 5, 26, 11, 8, 25, 14, 23, 19, 14, 11, 22, 29, 11, 13, 12, 17];
     var randomData = [];
 
@@ -47,6 +47,7 @@ for (var i = 0; i < 25; i++){
     randomData.push(newNumber);
 }
 */
+/*
 // five Arrays of paragraphs
 d3.select("body").selectAll("div")
     .data(dataset)
@@ -54,23 +55,27 @@ d3.select("body").selectAll("div")
     .append("div")
     .attr("class", "bar")
     .style("height", function (d) {
-        var barHeigt = d * 5; //Scale up by factor of 5
+        var barHeigt = d * 10; //Scale up by factor of 5 zum vergrößern
         return barHeigt + "px";
     });
-
+*/
 
 // SVG Elements
 
    var svg = d3.select("body").append("svg");
    svg.attr("width", w)
-       .attr("height", h);
+       .attr("height", h)
+
    var circles = svg.selectAll("circle").data(dataset).enter().append("circle");
    circles.attr("cx", function (d, i) {
        return (i * 50) + 25;
-   }).attr("cy", h/2).attr("r", function (d) {
+   }).attr("cy", h/2)
+       .attr("fill", "yellow")
+       .attr("stroke", "orange")
+       .attr("r", function (d)
+       {
        return d;
    });
-
 
 </script>
 </body>
