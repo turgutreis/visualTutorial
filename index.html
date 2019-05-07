@@ -21,7 +21,7 @@
     var h = 50;
     var barPadding = 2; // <-- New!
 
-
+/*
     var rowConverter = function(d) {
         return {
             Food: d.Food, //No conversion
@@ -37,14 +37,38 @@
                 return d.Food
             })
             .style("color", function (d) {
-                if (d.Deliciousness < 6) {
+    1             if (d.Deliciousness < 6) {
                     return "red"
                 }else {
                     return "green"
                 }
             });
     });
+*/
 
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", 500)
+        .attr("height", 50)
+        .attr("fill", "yellow")
+        .attr("stroke", "orange")
+        .attr("stroke-width", function(d) {
+            return d / 2;
+
+        });
+
+    var circles = svg.selectAll("circle")
+        .data(dataset)
+        .enter()
+        .append("circle");
+
+    circles.attr("cx", function(d, i) {
+        return (i * 50) + 25;
+    })
+        .attr("cy", h/2)
+        .attr("r", function(d) {
+            return d;
+        });
 
 
 /*

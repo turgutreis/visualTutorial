@@ -10,7 +10,7 @@ background-color: teal;"></div>
 1. ersten Balken erstellen in der Index.html
 2. Es ist auch möglich die Eigenschaften über ein CSS File zu steuern. Dafür ist es Hilfreich mit Klassen zu arbeiten.
 
-    ![](../onebalken.jpg)
+ 
 
 In dem styles.css kann man ein `div` mit dem Klassennamen `bar` initialisieren. 
 ```
@@ -44,7 +44,6 @@ d3.select("body").selectAll("div")
 1. Dafür erstmal ein Array mit fünf Zahlen erstellen
 2. Die Werte vom Array kann man dann weiter verwenden, für andere Beispiele.
 
-![](../balken.jpg)
 
 Der Funktionsaufruf `.attr("class","bar")` ist wichtig, weil so kann man auf die Eigenschaften Klasse `bar` zugreifen
 Für die Abstände zwischen`margin-right: 2px;`
