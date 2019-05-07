@@ -7,7 +7,7 @@ height: 75px;
 background-color: teal;"></div>
 ```
 
-1. ersten Balken in der Index.html
+1. ersten Balken erstellen in der Index.html
 2. Es ist auch möglich die Eigenschaften über ein CSS File zu steuern. Dafür ist es Hilfreich mit Klassen zu arbeiten.
 
     ![](../onebalken.jpg)
@@ -47,4 +47,4 @@ d3.select("body").selectAll("div")
 ![](../balken.jpg)
 
 Der Funktionsaufruf `.attr("class","bar")` ist wichtig, weil so kann man auf die Eigenschaften Klasse `bar` zugreifen
- 
+Für die Abstände zwischen`margin-right: 2px;`

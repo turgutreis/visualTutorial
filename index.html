@@ -12,27 +12,39 @@
 
 
 <script type="text/javascript">
-    var body = d3.select("body");
-    var p = body.append("p");
 
     var dataset = [15, 7, 5, 15, 11];
-    var dataset2 = [25, 7, 5, 26, 11, 8, 25, 14, 23, 19, 14, 11, 22, 29, 11, 13, 12, 17];
-    var randomData = [];
+   // var dataset2 = [25, 7, 5, 26, 11, 8, 25, 14, 23, 19, 14, 11, 22, 29, 11, 13, 12, 17];
+   // var randomData = [];
 
     var w = 500;
     var h = 50;
-/*
-    d3.csv("test.csv")
-        .row(function(d) {
-            return {
-                Food: d.Food,
-                Deliciousness: parseFloat(d.Deliciousness) // converting name to upper case
-            };
-        })
-        .get(function(data) {
-            console.log(data);
-        });
-*/
+    var barPadding = 2; // <-- New!
+
+
+    var rowConverter = function(d) {
+        return {
+            Food: d.Food, //No conversion
+            Deliciousness: parseFloat(d.Deliciousness)
+        };
+    };
+    d3.csv("data.csv", rowConverter, function(data) {
+        d3.select("body").selectAll("p")
+            .data(data)
+            .enter()
+            .append("p")
+            .text(function (d) {
+                return d.Food
+            })
+            .style("color", function (d) {
+                if (d.Deliciousness < 6) {
+                    return "red"
+                }else {
+                    return "green"
+                }
+            });
+    });
+
 
 
 /*
@@ -47,8 +59,9 @@ for (var i = 0; i < 25; i++){
     randomData.push(newNumber);
 }
 */
-/*
+
 // five Arrays of paragraphs
+    /*
 d3.select("body").selectAll("div")
     .data(dataset)
     .enter()
@@ -60,13 +73,29 @@ d3.select("body").selectAll("div")
     });
 */
 
-// SVG Elements
 
+
+// SVG Elements
+/*
    var svg = d3.select("body").append("svg");
    svg.attr("width", w)
        .attr("height", h)
-       
 
+
+    svg.selectAll("text")
+        .data(dataset)
+        .enter()
+        .append("text")
+        .attr("x", function(d, i) {
+            return i * (w / dataset.length);
+        })
+        .attr("y", function(d) {
+            return h - (d * 4);
+        });
+
+        */
+
+/*
    var circles = svg.selectAll("circle").data(dataset).enter().append("circle");
    circles.attr("cx", function (d, i) {
        return (i * 50) + 25;
@@ -77,6 +106,26 @@ d3.select("body").selectAll("div")
        {
        return d;
    });
+*/
+
+/*
+    //Create SVG element
+    var svg = d3.select("body")
+        .append("svg")
+
+
+    svg.selectAll("rect")
+        .data(dataset)
+        .enter()
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", w)
+        .attr("height", h)
+        .attr("width", w / dataset.length - barPadding)
+
+*/
+
 
 </script>
 </body>
