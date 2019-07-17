@@ -10,8 +10,8 @@
 </head>
 <body>
 <!-- Create an element where the map will take place -->
-<svg id="my_dataviz" width="1024" height="768"></svg>
-<div style="height: 75px;"></div>
+<!-- <svg id="my_dataviz" width="1024" height="768"></svg>-->
+<!--<div style="height: 75px;"></div>-->
 
 <script type="text/javascript">
 
@@ -27,6 +27,7 @@
             return {
                 country: d.country, //No conversion
                 province: d.province,
+                total_cases: d.total_cases
             };
         };
         d3.csv("data/dataebolazone.csv", rowConverter, function(data) {
@@ -35,8 +36,13 @@
                 .enter()
                 .append("p")
                 .text(function (d) {
-                        console.log(d.country);
-                        return d.country +","+ d.province
+                    if (d.total_cases>100){
+
+                        return d.country +","+ d.province +","+d.total_cases
+                    }
+                       // console.log(d.country);
+                        //console.log(data[1].country);
+                       //
 
                 })
         });
