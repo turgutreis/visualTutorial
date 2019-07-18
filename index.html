@@ -1,16 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>D3 Page Template</title>
-    <link rel="stylesheet" href="index.css">
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
-    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-</head>
-<body>
+<meta charset="utf-8">
+<title>D3 Page Template</title>
+<link rel="stylesheet" href="index.css">
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <!-- Create an element where the map will take place -->
-<svg id="my_dataviz" width="1920" height="1080"></svg>
+<div id="my_dataviz"></div>
+
+<style>
+.circle:hover{
+    stroke: black;
+    stroke-width: 4px;
+}
+</style>
 
 <script type="text/javascript">
 
@@ -42,10 +45,15 @@
 */
 
 
+// Size ?
+var width = 1920
+var height = 1080
+
 // The svg
-var svg = d3.select("svg"),
-    width = +svg.attr("width"),
-    height = +svg.attr("height");
+var svg = d3.select("#my_dataviz")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
 
 // Map and projection
 var projection = d3.geoMercator()
@@ -62,7 +70,7 @@ var markers = [
 d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson", function(data){
 
     // Filter data
-    data.features = data.features.filter(function(d){console.log(d.properties.name) ; return d.properties.name=="Democratic Republic of the Congo"})
+    data.features = data.features.filter(function(d){console.log(d.properties.name) ; return d.properties.name=="Democratic Republic of the Congo"});
 
     // Draw the map
     svg.append("g")
@@ -75,7 +83,7 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
                 .projection(projection)
         )
         .style("stroke", "none")
-        .style("opacity", .3)
+        .style("opacity", .3);
 
     // create a tooltip
     var Tooltip = d3.select("#my_dataviz")
@@ -91,16 +99,16 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
     // Three function that change the tooltip when user hover / move / leave a cell
     var mouseover = function(d) {
         Tooltip.style("opacity", 1)
-    }
+    };
     var mousemove = function(d) {
         Tooltip
             .html(d.name + "<br>" + "long: " + d.long + "<br>" + "lat: " + d.lat)
             .style("left", (d3.mouse(this)[0]+10) + "px")
             .style("top", (d3.mouse(this)[1]) + "px")
-    }
+    };
     var mouseleave = function(d) {
         Tooltip.style("opacity", 0)
-    }
+    };
 
     // Add circles:
     svg
@@ -108,14 +116,14 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
         .data(markers)
         .enter()
         .append("circle")
-        .attr("cx", function(d){ return projection([d.long, d.lat])[0] })
-        .attr("cy", function(d){ return projection([d.long, d.lat])[1] })
-        .attr("r", 14)
-        .attr("class", "circle")
-        .style("fill", "69b3a2")
-        .attr("stroke", "#69b3a2")
-        .attr("stroke-width", 3)
-        .attr("fill-opacity", .4)
+            .attr("cx", function(d){ return projection([d.long, d.lat])[0] })
+            .attr("cy", function(d){ return projection([d.long, d.lat])[1] })
+            .attr("r", 14)
+            .attr("class", "circle")
+            .style("fill", "69b3a2")
+            .attr("stroke", "#69b3a2")
+            .attr("stroke-width", 3)
+            .attr("fill-opacity", .4)
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave)
@@ -125,5 +133,3 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
 
 
 </script>
-</body>
-</html>
