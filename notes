@@ -1,1 +1,120 @@
 //https://data.humdata.org/dataset/ebola-cases-and-deaths-drc-north-kivu
+
+fetch('https://nominatim.openstreetmap.org/search?q='+d.health_zone+'&format=json&addressdetails=1')
+                            .then(function(response) {
+                                return response.json();
+                            })
+                            .then(function(myResult) {
+                                console.log((d.health_zone+","+myResult[0].lat +","+ myResult[0].lon));
+
+                            });
+
+                             /*
+                                var dataset = [15, 7, 5, 15, 11];
+                                // var dataset2 = [25, 7, 5, 26, 11, 8, 25, 14, 23, 19, 14, 11, 22, 29, 11, 13, 12, 17];
+                                // var randomData = [];
+                                var w = 500;
+                                var h = 50;
+                                var barPadding = 2; // <-- New!
+                            */
+                                /*
+                                        var svg = d3.select("body")
+                                            .append("svg")
+                                            .attr("width", 500)
+                                            .attr("height", 50)
+                                            .attr("fill", "yellow")
+                                            .attr("stroke", "orange")
+                                            .attr("stroke-width", function(d) {
+                                                return d / 2;
+
+                                            });
+
+                                        var circles = svg.selectAll("circle")
+                                            .data(dataset)
+                                            .enter()
+                                            .append("circle");
+
+                                        circles.attr("cx", function(d, i) {
+                                            return (i * 50) + 25;
+                                        })
+                                            .attr("cy", h/2)
+                                            .attr("r", function(d) {
+                                                return d;
+                                            });
+                                */
+                                /*
+                                d3.json("jerry.json", function (data) {
+                                    console.log(data)
+                                })
+                                */
+                                // Random Value
+                                /*
+                                for (var i = 0; i < 25; i++){
+                                    var newNumber = Math.random() * 30;
+                                    randomData.push(newNumber);
+                                }
+                                */
+
+                                // five Arrays of paragraphs
+                                /*
+                            d3.select("body").selectAll("div")
+                                .data(dataset)
+                                .enter()
+                                .append("div")
+                                .attr("class", "bar")
+                                .style("height", function (d) {
+                                    var barHeigt = d * 10; //Scale up by factor of 5 zum vergrößern
+                                    return barHeigt + "px";
+                                });
+                            */
+
+                                // SVG Elements
+                                /*
+                                   var svg = d3.select("body").append("svg");
+                                   svg.attr("width", w)
+                                       .attr("height", h)
+
+
+                                    svg.selectAll("text")
+                                        .data(dataset)
+                                        .enter()
+                                        .append("text")
+                                        .attr("x", function(d, i) {
+                                            return i * (w / dataset.length);
+                                        })
+                                        .attr("y", function(d) {
+                                            return h - (d * 4);
+                                        });
+
+                                        */
+
+                                /*
+                                   var circles = svg.selectAll("circle").data(dataset).enter().append("circle");
+                                   circles.attr("cx", function (d, i) {
+                                       return (i * 50) + 25;
+                                   }).attr("cy", h/2)
+                                       .attr("fill", "yellow")
+                                       .attr("stroke", "orange")
+                                       .attr("r", function (d)
+                                       {
+                                       return d;
+                                   });
+                                */
+
+                                /*
+                                    //Create SVG element
+                                    var svg = d3.select("body")
+                                        .append("svg")
+
+
+                                    svg.selectAll("rect")
+                                        .data(dataset)
+                                        .enter()
+                                        .append("rect")
+                                        .attr("x", 0)
+                                        .attr("y", 0)
+                                        .attr("width", w)
+                                        .attr("height", h)
+                                        .attr("width", w / dataset.length - barPadding)
+
+                                */
