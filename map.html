@@ -35,7 +35,7 @@
 
         // Create a color scale
         var allContinent = d3.map(data, function (d) {
-            return (d.homecontinent)
+            return (d.health_zone)
         }).keys()
         var color = d3.scaleOrdinal()
             .domain(allContinent)
