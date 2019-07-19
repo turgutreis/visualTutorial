@@ -9,24 +9,30 @@
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 </head>
 <body>
-<!-- Create an element where the map will take place -->
-<svg id="my_dataviz" width="1024" height="768"></svg>
-<div style="height: 75px;"></div>
 
 <script type="text/javascript">
 
-    var dataset = [15, 7, 5, 15, 11];
-    // var dataset2 = [25, 7, 5, 26, 11, 8, 25, 14, 23, 19, 14, 11, 22, 29, 11, 13, 12, 17];
-    // var randomData = [];
-    var w = 500;
-    var h = 50;
-    var barPadding = 2; // <-- New!
 
+    var rowConverter = function (d) {
+        return {
+            report_date: d.report_date, //No conversion
+            province: d.province,
+            health_zone: d.health_zone,
+            confirmed_cases: d.confirmed_cases
+        };
+    };
 
-    d3.csv("data/dataebolazone.csv").then(function(data) {
-        console.log(data[0]);
+    d3.csv("data/dataebolazone.csv", rowConverter, function (data) {
+        d3.select("body").selectAll("p")
+            .data(data)
+            .enter()
+            .append("p")
+            .text(function (d) {
+                if (d.confirmed_cases>100)
+
+                    return d.report_date+","+d.province+","+d.health_zone+"||"+d.confirmed_cases
+            })
     });
-
 
 </script>
 </body>

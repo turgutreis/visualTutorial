@@ -1,29 +1,6 @@
 
 function getData() {
 
-    var rowConverter = function (d) {
-        return {
-            //country: d.country, //No conversion
-            //province: d.province,
-            health_zone: d.health_zone,
-            lat: d.lat,
-            lon: d.lon,
-            confirmed_cases: d.confirmed_cases
-        };
-    };
-
-    d3.csv("data/kongocity.csv", rowConverter, function (data) {
-        d3.select("body").selectAll("p")
-            .data(data)
-            .enter()
-            .append("p")
-            .text(function (d) {
-                if (d.confirmed_cases>10)
-
-                    return d.health_zone+","+d.lat+","+d.lon+","+d.confirmed_cases
-
-            })
-    });
 
 
 
