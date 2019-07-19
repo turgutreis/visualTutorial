@@ -9,5 +9,9 @@
     <orderEntry type="library" name="d3.v4" level="application" />
     <orderEntry type="library" name="d3-geo-projection.v2" level="application" />
     <orderEntry type="library" name="d3-scale-chromatic.v1" level="application" />
+    <orderEntry type="library" name="d3.v4" level="application" />
+    <orderEntry type="library" name="d3-geo-projection.v2" level="application" />
+    <orderEntry type="library" name="d3-scale-chromatic.v1" level="application" />
+    <orderEntry type="library" name="leaflet" level="application" />
   </component>
 </module>

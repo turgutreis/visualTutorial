@@ -46,8 +46,8 @@
 
 
 // Size ?
-var width = 1920
-var height = 1080
+var width = 1024
+var height = 768
 
 // The svg
 var svg = d3.select("#my_dataviz")
@@ -63,7 +63,11 @@ var projection = d3.geoMercator()
 
 // Create data for circles:
 var markers = [
-    {long: 29.15618, lat: -0.36879, name: "Alimbongo"} // corsica
+    {long: 29.15618, lat: -0.36879, name: "Alimbongo"}, // corsica
+    {long: 29.4766619668044, lat: 0.3619911, name: "Beni"}, // corsica
+    {long: -2.966667, lat:  12.85, name: "Biena"}, // corsica
+    {long: 17.7322, lat: -4.39453, name: "Butembo"} // corsica
+
 ];
 
 // Load external data and boot
