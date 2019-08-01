@@ -13,6 +13,8 @@
 <script type="text/javascript">
 
 
+
+/*
     var rowConverter = function (d) {
         return {
             report_date: d.report_date, //No conversion
@@ -22,17 +24,33 @@
         };
     };
 
-    d3.csv("data/dataebolazone.csv", rowConverter, function (data) {
+    d3.json("data/csvjson.json", rowConverter, function (data) {
         d3.select("body").selectAll("p")
             .data(data)
             .enter()
             .append("p")
             .text(function (d) {
                 if (d.confirmed_cases>100)
+                    console.log(d.report_date+","+d.province+","+d.health_zone+"||"+d.confirmed_cases);
 
-                    return d.report_date+","+d.province+","+d.health_zone+"||"+d.confirmed_cases
             })
     });
+*/
+    d3.json("data/csvjson.json", function(json) {
+        for (var i = 0; i < json.length; i++){
+
+            if (json[i].confirmed_cases>100){
+                console.log(json[i].report_date);
+                console.log(json[i].province);
+                console.log(json[i].health_zone);
+                console.log(json[i].confirmed_cases);
+            }
+
+
+        }
+    });
+
+
 
 </script>
 </body>
