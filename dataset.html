@@ -9,7 +9,7 @@
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 </head>
 <body>
-
+<script src="js/moment.min.js"></script>
 <script type="text/javascript">
 
 
@@ -37,17 +37,25 @@
     });
 */
     d3.json("data/csvjson.json", function(json) {
-        for (var i = 0; i < json.length; i++){
+        let sum = 0;
+        for (let i = 0; i < json.length; i++){
+            if (json[i].confirmed_cases>200){
+                //console.log(json[0].report_date);
+                let d = new Date(json[i].report_date);
+                let dayWrapper = moment(d).format("DD");
+                let monthWrapper = moment(d).format("MM");
+                let yearWrapper = moment(d).format("YYYY");
+                let datum = moment(d).format("DD-MM-YYYY");
+               // console.log("Datum: " +dayWrapper + "-" + monthWrapper + "-" + yearWrapper + " == " + json[i].province)
+                if(json[i].province === "North Kivu" && yearWrapper === "2019" && monthWrapper === "07"){
+                    sum += json[i].confirmed_cases;
 
-            if (json[i].confirmed_cases>100){
-                console.log(json[i].report_date);
-                console.log(json[i].province);
-                console.log(json[i].health_zone);
-                console.log(json[i].confirmed_cases);
+                    console.log(json[i].confirmed_cases + "==" + datum + " " + json[i].province);
+                }
+
             }
-
-
         }
+        console.log("Summme: " +sum)
     });
 
 
