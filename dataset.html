@@ -9,6 +9,7 @@
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 </head>
 <body>
+<script type="text/javascript" src="data/congocountries.js"></script>
 <script src="js/moment.min.js"></script>
 <script type="text/javascript">
 
@@ -36,28 +37,46 @@
             })
     });
 */
+let summe = 0;
+sortData("North Kivu", "2019", "07");
+function sortData(pro, year, month){
+
     d3.json("data/csvjson.json", function(json) {
-        let sum = 0;
+
         for (let i = 0; i < json.length; i++){
-            if (json[i].confirmed_cases>200){
-                //console.log(json[0].report_date);
-                let d = new Date(json[i].report_date);
-                let dayWrapper = moment(d).format("DD");
-                let monthWrapper = moment(d).format("MM");
-                let yearWrapper = moment(d).format("YYYY");
-                let datum = moment(d).format("DD-MM-YYYY");
-               // console.log("Datum: " +dayWrapper + "-" + monthWrapper + "-" + yearWrapper + " == " + json[i].province)
-                if(json[i].province === "North Kivu" && yearWrapper === "2019" && monthWrapper === "07"){
-                    sum += json[i].confirmed_cases;
+               // statesData.features[j].properties.confirmed_case = 0;
+                if (json[i].confirmed_cases>500){
+                    let d = new Date(json[i].report_date);
+                    let dayWrapper = moment(d).format("DD");
+                    let monthWrapper = moment(d).format("MM");
+                    let yearWrapper = moment(d).format("YYYY");
+                    let datum = moment(d).format("DD-MM-YYYY");
+                    // console.log("Datum: " +dayWrapper + "-" + monthWrapper + "-" + yearWrapper + " == " + json[i].province)
+                    if(json[i].province === pro && yearWrapper === year && monthWrapper === month){
 
-                    console.log(json[i].confirmed_cases + "==" + datum + " " + json[i].province);
+                        summe += json[i].confirmed_cases;
+
+                        //console.log(statesData.features[j].properties.confirmed_cases)
+
+                      //  console.log(json[i].confirmed_cases + "==" + datum + " " + json[i].province);
+
+                    }
                 }
-
-            }
         }
-        console.log("Summme: " +sum)
+        data(summe);
+        console.log(summe)
     });
+}
 
+
+function data(test) {
+    for (let j = 0; j < statesData.features.length; j++)
+    {
+        statesData.features[0].properties.confirmed_case = test;
+
+    }
+    console.log("BELIJAT: "+statesData.features[0].properties.confirmed_case);
+}
 
 
 </script>
