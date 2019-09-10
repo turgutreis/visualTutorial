@@ -38,14 +38,14 @@
     });
 */
 let summe = 0;
-sortData("North Kivu", "2019", "07");
+sortData("Ituri", "2019", "07");
 function sortData(pro, year, month){
 
     d3.json("data/csvjson.json", function(json) {
 
         for (let i = 0; i < json.length; i++){
                // statesData.features[j].properties.confirmed_case = 0;
-                if (json[i].confirmed_cases>500){
+                if (json[i].confirmed_cases>100){
                     let d = new Date(json[i].report_date);
                     let dayWrapper = moment(d).format("DD");
                     let monthWrapper = moment(d).format("MM");
@@ -75,7 +75,9 @@ function data(test) {
         statesData.features[0].properties.confirmed_case = test;
 
     }
-    console.log("BELIJAT: "+statesData.features[0].properties.confirmed_case);
+
+    console.log("BELIJAT: "+statesData.features[14].properties.name);
+
 }
 
 

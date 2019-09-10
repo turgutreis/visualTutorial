@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
 	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="https://unpkg.com/d3-simple-slider"></script>
 
 
 	<style>
@@ -31,7 +32,20 @@
 </head>
 <body>
 
-<div id='map'></div>
+<div id='map'>
+
+
+</div>
+
+<div class="container">
+
+	<h2>Time</h2>
+	<div class="row align-items-center">
+		<div class="col-sm-2"><p id="value-time"></p></div>
+		<div class="col-sm"><div id="slider-time"></div></div>
+	</div>
+
+</div>
 
 <script type="text/javascript" src="data/congocountries.js"></script>
 <script src="js/moment.min.js"></script>
@@ -59,33 +73,41 @@
 		return this._div;
 	};
 
+	//sortData("North Kivu", "2019", 400, 400);
+
 	info.update = function (props) {
 		if(!props){
-			statesData.features[0].properties.confirmed_cases = 0
-			statesData.features[0].properties.total_deaths = 0
+			statesData.features[0].properties.confirmed_cases = 0;
+			statesData.features[0].properties.total_deaths = 0;
 			return
 		}
 		console.log(props.name);
-       // sortData("North Kivu", "2019", "07", 400, 400, props)
+		sortData("North Kivu", "2019", 400, 400, props);
+		sortData("Ituri", "2019", 0, 0, props);
+
+
+
 /*		this._div.innerHTML = '<h4>Total Deaths</h4>' +  (props ?
 				'<b>' + props.name + '</b><br />' + props.total_deaths + ' deaths <br />' + props.confirmed_cases + ' cases'
 				: 'Hover over a state');*/
 	};
 
+
 	info.addTo(map);
 	// get color depending on population total_deaths value
 	function getColor(d) {
-		return d > 15000 ? '#800026' :
-				d > 12000  ? '#BD0026' :
-				d > 10000 ? '#E31A1C' :
-				d > 9000 ? '#FC4E2A' :
-				d > 8000   ? '#FD8D3C' :
-				d > 7000   ? '#FEB24C' :
-				d > 6000   ? '#FED976' :
+		return d > 10000 ? '#800026' :
+				d > 9000  ? '#BD0026' :
+				d > 8000 ? '#E31A1C' :
+				d > 7000 ? '#FC4E2A' :
+				d > 6000   ? '#FD8D3C' :
+				d > 5000   ? '#FEB24C' :
+				d > 4000   ? '#FED976' :
 							'#FFEDA0';
 	}
 
 	function style(feature) {
+		//console.log("HANSO: "+feature.properties.name);
 		return {
 			weight: 2,
 			opacity: 1,
@@ -94,19 +116,22 @@
 			fillOpacity: 0.7,
 			fillColor: getColor(statesData.features[0].properties.confirmed_cases)
 		};
+
 	}
 
-    function sortData(pro, year, month, max1, max2, props1){
+
+
+    function sortData(pro, year, max1, max2, props1){
 
         d3.json("data/csvjson.json", function(json) {
             for (let i = 0; i < json.length; i++){
-                if(json[i].province === props1.name && json[i].confirmed_cases!== "" && json[i].total_deaths!== "" && json[i].confirmed_cases > max1 && json[i].total_deaths > max2){
+                if(json[i].province ===  props1.name && json[i].confirmed_cases!== "" && json[i].total_deaths!== "" && json[i].confirmed_cases > max1 && json[i].total_deaths > max2){
                     let d = new Date(json[i].report_date);
                     let dayWrapper = moment(d).format("DD");
                     let monthWrapper = moment(d).format("MM");
                     let yearWrapper = moment(d).format("YYYY");
                     let datum = moment(d).format("DD-MM-YYYY");
-                    if(json[i].province === pro && yearWrapper === year && monthWrapper === month){
+                    if(json[i].province === pro && yearWrapper === year){
                         //sum += json[i].confirmed_cases;
 
                         //	console.log(json[i].confirmed_cases + "==" + datum + " " + json[i].province);
@@ -116,10 +141,11 @@
 
                 }
             }
-            console.log(`state: ${props1.name} confirmed cases: ${statesData.features[0].properties.confirmed_cases} total deaths: ${statesData.features[0].properties.total_deaths}`)
-            info._div.innerHTML = '<h4>Total Deaths</h4>' +  (props1 ?
-                '<b>' + props1.name + '</b><br />' + statesData.features[0].properties.total_deaths + ' deaths <br />' + statesData.features[0].properties.confirmed_cases + ' cases'
-                : 'Hover over a state');
+			console.log(`state: ${props1.name} confirmed cases: ${statesData.features[0].properties.confirmed_cases} total deaths: ${statesData.features[0].properties.total_deaths}`)
+			info._div.innerHTML = '<h4>Total Deaths</h4>' +  (props1 ?
+					'<b>' + props1.name + '</b><br />' + statesData.features[0].properties.total_deaths + ' deaths <br />' + statesData.features[0].properties.confirmed_cases + ' cases'
+					: 'Hover over a state');
+
         });
 
     }
@@ -175,7 +201,7 @@
 	legend.onAdd = function (map) {
 
 		var div = L.DomUtil.create('div', 'info legend'),
-			grades = [0, 6000, 7000, 8000, 9000, 10000, 12000, 15000],
+			grades = [0, 4000, 5000, 6000, 7000, 8000, 9000, 10000],
 			labels = [],
 			from, to;
 
@@ -193,6 +219,39 @@
 	};
 
 	legend.addTo(map);
+
+
+	// Time
+	var dataTime = d3.range(0, 10).map(function(d) {
+		return new Date(2010 + d, 1, 1);
+	});
+
+	var sliderTime = d3
+			.sliderBottom()
+			.min(d3.min(dataTime))
+			.max(d3.max(dataTime))
+			.step(1000 * 60 * 60 * 24 * 365)
+			.width(300)
+			.tickFormat(d3.timeFormat('%Y'))
+			.tickValues(dataTime)
+			.default(new Date(2016, 1, 1))
+			.on('onchange', val => {
+				d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
+				console.log("JERRYYY" +val)
+			});
+
+	var gTime = d3
+			.select('div#slider-time')
+			.append('svg')
+			.attr('width', 500)
+			.attr('height', 100)
+			.append('g')
+			.attr('transform', 'translate(30,30)');
+
+	gTime.call(sliderTime);
+
+	d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
+
 
 </script>
 
