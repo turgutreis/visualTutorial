@@ -322,8 +322,7 @@
     "total_cases_change": 0
   },
   {
-    "report_date": "2019-07-13",
-    "country": "COD",
+    "report_date": "2019-07-13",    "country": "COD",
     "province": "Ituri",
     "health_zone": "Rwampara",
     "confirmed_cases": 8,
