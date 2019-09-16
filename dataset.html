@@ -27,7 +27,7 @@
 
 
 
-/*
+
     var rowConverter = function (d) {
         return {
             report_date: d.report_date, //No conversion
@@ -44,11 +44,11 @@
             .append("p")
             .text(function (d) {
                 if (d.confirmed_cases>100)
-                    console.log(d.report_date+","+d.province+","+d.health_zone+"||"+d.confirmed_cases);
+                    return d
 
             })
     });
-*/
+
 
 
 /*
