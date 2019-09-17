@@ -14,36 +14,54 @@
     stroke-width: 4px;
 }
 </style>
+<body>
+
+<h2>Create JSON string from a JavaScript object.</h2>
+
+<p id="demo"></p>
+
+
+
 
 <script type="text/javascript">
 
 /*
-    var rowConverter = function (d) {
-            return {
-                //country: d.country, //No conversion
-                //province: d.province,
-                health_zone: d.health_zone,
-                lat: d.lat,
-                lon: d.lon,
-                confirmed_cases: d.confirmed_cases
-            };
-        };
 
-        d3.csv("data/kongocity.csv", rowConverter, function (data) {
+        d3.json("data/cityjson.json", function (data) {
             d3.select("body").selectAll("p")
                 .data(data)
                 .enter()
                 .append("p")
                 .text(function (d) {
-                if (d.confirmed_cases>10)
 
-                        return d.health_zone+","+d.lat+","+d.lon+","+d.confirmed_cases
+                    fetch('https://nominatim.openstreetmap.org/search?q='+d.city+'&format=json&addressdetails=1')
+                        .then(function(response) {
+                            return response.json();
+                        })
+                        .then(function(myResult) {
+                                //console.log((d.city+"," + "lat: " +myResult[0].lat +","+ "lng: " +myResult[0].lon));
+                                let gpsData = {
+                                        long : myResult[0].lon,
+                                        lat : myResult[0].lat,
+                                        name: d.city,
+                                };
+                                var jsonData = JSON.stringify(gpsData);
+                                console.log(jsonData);
+                                return jsonData;
+                            });
 
                 })
         });
 
-*/
+        function download(content, fileName, contentType) {
+            var a = document.createElement("a");
+            var file = new Blob([content], {type: contentType});
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+            a.onload();
+        }
 
+*/
 
 // Size ?
 var width = 1024
@@ -62,13 +80,7 @@ var projection = d3.geoMercator()
     .translate([ width/2, height/2 ]);
 
 // Create data for circles:
-var markers = [
-    {long: 29.15618, lat: -0.36879, name: "Alimbongo"}, // corsica
-    {long: 29.4766619668044, lat: 0.3619911, name: "Beni"}, // corsica
-    {long: -2.966667, lat:  12.85, name: "Biena"}, // corsica
-    {long: 17.7322, lat: -4.39453, name: "Butembo"} // corsica
 
-];
 
 // Load external data and boot
 d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson", function(data){
@@ -135,5 +147,5 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
 
 
 
-
 </script>
+</body>

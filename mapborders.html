@@ -49,8 +49,39 @@
 <script src="js/moment.min.js"></script>
 <script type="text/javascript">
 
-	var map = L.map('map').setView([-2.812660, 23.389677], 4);
+	var markers = [
+		{long: 29.15618, lat: -0.36879, name: "Alimbongo"}, // corsica
+		{long: 29.452823694808, lat: 0.48155695, name: "Beni"}, // corsica
+		{long:28.799475, lat:  0.262649, name: "Biena"}, // corsica
+		{long: 17.7322, lat: -4.39453, name: "Butembo"}, // corsica
+		{long:29.3546773,lat:0.3230854,name:"Kalunguta"},
+		{long:30.4833698,lat:1.4418677,name:"Tchomia"},
+		{long:88.1280238,lat:23.6399348,name:"Katwa"},
+		{long:29.4019447,lat:0.0049332,name:"Kyondo"},
+		{long:12.2348885532468,lat:50.9918158,name:"Kayna"},
+		{long:29.2106874,lat:0.4612573,name:"Mabalako"},
+		{long:28.7713500602038,lat:-0.06505135,name:"Lubero"},
+		{long:29.2459675717531,lat:-1.5500204,name:"Nyiragongo"},
+		{long:29.1821659,lat:-1.6503321,name:"Musienene"},
+		{long:29.3493092,lat:-0.1329899,name:"Masereka"},
+		{long:29.74576,lat:0.32893,name:"Mutwanga"},
+		{long:29.5172722,lat:0.6967778,name:"Oicha"},
+		{long:29.1890613929238,lat:-1.5540594,name:"Goma"},
+		{long:29.4074028,lat:0.141955,name:"Vuhovi"},
+		{long:30.6979912,lat:3.1340398,name:"Ariwara"},
+		{long:29.082336093425,lat:1.3552303,name:"Mandima"},
+		{long:29.4953889,lat:1.3499167,name:"Lolwa"},
+		{long:29.0648889,lat:0.2736111,name:"Mambasa"},
+		{long:29.7631,lat:1.3667,name:"Komanda"},
+		{long:30.03342,lat:1.432,name:"Nyankunde"},
+		{long:30.349699999999984,lat:1.41111,name:"Rwampara"},
+		{long:30.2478844,lat:1.5620529,name:"Bunia"},
+		{long:28.310608945254,lat:-3.3934106,name:"Mwenga"},
+		{long:28.701999999999998,lat:-0.983957,name:"Pinga"}
+	];
 
+
+	let map = L.map('map').setView([-2.812660, 23.389677], 4);
 
 	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 		maxZoom: 18,
@@ -60,39 +91,28 @@
 		id: 'mapbox.light'
 	}).addTo(map);
 
-	const availableStates = ["North Kivu", "Ituri"];
+	const availableStates = ["North Kivu", "Ituri", "South Kivu"];
 
 	// control that shows state info on hover
 	var info = L.control();
-	var sum = 0;
 
 	info.onAdd = function (map) {
 		this._div = L.DomUtil.create('div', 'info');
 		this.update();
 		return this._div;
 	};
-
-	//sortData("North Kivu", "2019", 400, 400);
-
+	//calculateData("2019", 100, 100);
 	info.update = function (props) {
 		if(!props){
 			return
 		}
 		//console.log(props.name);
-		//sortData("North Kivu", "2019", 400, 400, props);
-		//sortData("Ituri", "2019", 0, 0, props);
-
 		info._div.innerHTML = '<h4>Total Deaths</h4>' +  (props ?
 				'<b>' + props.name + '</b><br />' + statesData.features[0].properties.total_deaths + ' deaths <br />' + statesData.features[0].properties.confirmed_cases + ' cases'
 				: 'Hover over a state');
-
-/*		this._div.innerHTML = '<h4>Total Deaths</h4>' +  (props ?
-				'<b>' + props.name + '</b><br />' + props.total_deaths + ' deaths <br />' + props.confirmed_cases + ' cases'
-				: 'Hover over a state');*/
 	};
-
-
 	info.addTo(map);
+
 	// get color depending on population total_deaths value
 	function getColor(d) {
 		return d > 8000 ? '#800026' :
@@ -160,7 +180,7 @@
 
 	map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
 
-
+	// LEGENDE
 	var legend = L.control({position: 'bottomright'});
 
 	legend.onAdd = function (map) {
@@ -186,8 +206,19 @@
 	legend.addTo(map);
 
 
-	// Time
-	let dataTime = d3.range(7, 19).map(function(d) {
+	for (var t = 0; t<markers.length;t++){
+		L.circle([markers[t].lat, markers[t].long], 800, {
+			color: 'red',
+			fillColor: '#f03',
+			fillOpacity: 0.5
+		}).addTo(map).bindPopup(markers[t].name);
+	}
+
+
+
+
+	// DATE SLIDER
+	let dataTime = d3.range(7, 21).map(function(d) {
 		return new Date(2018, d, 1);
 	});
 
@@ -264,6 +295,39 @@
 		});
 
 	}
+
+	function calculateData(date1, max1, max2, cb){
+		for(let i = 0; i < statesData.features.length; i++){
+			statesData.features[i].properties.confirmed_cases = 0;
+			statesData.features[i].properties.total_deaths = 0;
+		}
+		d3.json("data/csvjson.json", function(json) {
+			for (let i = 0; i < json.length; i++) {
+				if (json[i].confirmed_cases !== "" && json[i].total_deaths !== "" && json[i].confirmed_cases > max1 && json[i].total_deaths > max2) {
+					let d = new Date(json[i].report_date);
+					let dayWrapper = moment(d).format("DD");
+					let monthWrapper = moment(d).format("MM");
+					let yearWrapper = moment(d).format("YYYY");
+					let datum = moment(d).format("DD-MM-YYYY");
+
+					if (availableStates.includes(json[i].province) && yearWrapper === date1) {
+
+						for(let j = 0; j < statesData.features.length; j++){
+							if(json[i].province===statesData.features[j].properties.name){
+								statesData.features[j].properties.confirmed_cases += parseInt(json[i].confirmed_cases);
+								statesData.features[j].properties.total_deaths += parseInt(json[i].total_deaths);
+							}
+						}
+					}
+
+				}
+			}
+			cb(statesData)
+		});
+
+	}
+
+
 
 
 </script>
