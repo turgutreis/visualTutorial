@@ -222,6 +222,7 @@
 				filterDataByDate(val, 0, 0, () => {
 					updateStateAttr();
 				});
+				calculateCityData(val, 0,0);
 				resetColors()
 			});
 
@@ -244,12 +245,15 @@
 				console.log("confirmed cases for " + statesData.features[i].properties.name + ": " + statesData.features[i].properties.confirmed_cases);
 				console.log("total deaths for " + statesData.features[i].properties.name + ": " + statesData.features[i].properties.total_deaths);
 
-				resetColors(statesData.features[i].properties.name)
+				resetColors(statesData.features[i].properties.name);
 
 			}
 		}
 
 	}
+
+
+
 
 	function filterDataByDate(date, max1, max2, cb){
 		for(let i = 0; i < statesData.features.length; i++){
@@ -288,11 +292,9 @@
 		}
 	}
 
-	function calculateData(date1, max1, max2, cb){
-		for(let i = 0; i < statesData.features.length; i++){
-			statesData.features[i].properties.confirmed_cases = 0;
-			statesData.features[i].properties.total_deaths = 0;
-		}
+	function calculateCityData(date1, max1, max2){
+		let sumCases = 0;
+		let sumDeath = 0;
 		d3.json("data/csvjson.json", function(json) {
 			for (let i = 0; i < json.length; i++) {
 				if (json[i].confirmed_cases !== "" && json[i].total_deaths !== "" && json[i].confirmed_cases > max1 && json[i].total_deaths > max2) {
@@ -301,28 +303,30 @@
 					let monthWrapper = moment(d).format("MM");
 					let yearWrapper = moment(d).format("YYYY");
 					let datum = moment(d).format("DD-MM-YYYY");
-					if (availableStates.includes(json[i].province) && yearWrapper === date1) {
-						for(let j = 0; j < statesData.features.length; j++){
-							if(json[i].province===statesData.features[j].properties.name){
-								statesData.features[j].properties.confirmed_cases += parseInt(json[i].confirmed_cases);
-								statesData.features[j].properties.total_deaths += parseInt(json[i].total_deaths);
-							}
+					for (let t = 0; t<markers.length;t++){
+						if (markers[t].name.includes(json[i].health_zone) && yearWrapper === date1.getFullYear().toString() && parseInt(monthWrapper) == (date1.getMonth() + 1).toString()) {
+							sumCases += parseInt(json[i].confirmed_cases);
+							sumDeath += parseInt(json[i].total_deaths);
+							L.circle([markers[t].lat, markers[t].long],sumCases , {
+								color: 'red',
+								fillColor: getColor(sumCases),
+								fillOpacity: 1
+
+							}).addTo(map).bindPopup(markers[t].name);
+
+
 						}
+
 					}
+
+
+
 				}
 			}
-			cb(statesData)
 		});
 	}
 
-	for (let t = 0; t<markers.length;t++){
-		L.circle([markers[t].lat, markers[t].long], 1000, {
-			color: 'red',
-			fillColor: '#f03',
-			fillOpacity: 0.5
 
-		}).addTo(map).bindPopup(markers[t].name);
-	}
 
 
 
