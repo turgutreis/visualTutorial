@@ -1,19 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-	
 	<title>Choropleth Tutorial - Leaflet</title>
-
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
 	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
 	<script src="https://d3js.org/d3.v4.min.js"></script>
 	<script src="https://unpkg.com/d3-simple-slider"></script>
-
 
 	<style>
 		html, body {
@@ -31,9 +26,6 @@
 .legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; } #dateSlider{position: absolute;bottom: 0px;left: 0px; z-index:401;  background: rgba(255,255,255,0.8); width: 100%; } .info.legend.leaflet-control { bottom: 100px; }</style>
 </head>
 <body>
-
-
-
 <div id='map'>
 	<div id="dateSlider">
 
@@ -42,7 +34,6 @@
 		</div>
 
 	</div>
-
 </div>
 
 <script type="text/javascript" src="data/congocountries.js"></script>
@@ -53,12 +44,12 @@
 		{long: 29.15618, lat: -0.36879, name: "Alimbongo"}, // corsica
 		{long: 29.452823694808, lat: 0.48155695, name: "Beni"}, // corsica
 		{long:28.799475, lat:  0.262649, name: "Biena"}, // corsica
-		{long: 17.7322, lat: -4.39453, name: "Butembo"}, // corsica
+		{long: 29.292, lat: 0.124969, name: "Butembo"}, // corsica
 		{long:29.3546773,lat:0.3230854,name:"Kalunguta"},
 		{long:30.4833698,lat:1.4418677,name:"Tchomia"},
-		{long:88.1280238,lat:23.6399348,name:"Katwa"},
+		{long:29.3092446,lat:0.0933492,name:"Katwa"},
 		{long:29.4019447,lat:0.0049332,name:"Kyondo"},
-		{long:12.2348885532468,lat:50.9918158,name:"Kayna"},
+		{long:29.1779011,lat:-0.6182399,name:"Kayna"},
 		{long:29.2106874,lat:0.4612573,name:"Mabalako"},
 		{long:28.7713500602038,lat:-0.06505135,name:"Lubero"},
 		{long:29.2459675717531,lat:-1.5500204,name:"Nyiragongo"},
@@ -68,7 +59,7 @@
 		{long:29.5172722,lat:0.6967778,name:"Oicha"},
 		{long:29.1890613929238,lat:-1.5540594,name:"Goma"},
 		{long:29.4074028,lat:0.141955,name:"Vuhovi"},
-		{long:30.6979912,lat:3.1340398,name:"Ariwara"},
+		{long:30.69799999999998,lat:3.13404,name:"Ariwara"},
 		{long:29.082336093425,lat:1.3552303,name:"Mandima"},
 		{long:29.4953889,lat:1.3499167,name:"Lolwa"},
 		{long:29.0648889,lat:0.2736111,name:"Mambasa"},
@@ -79,7 +70,6 @@
 		{long:28.310608945254,lat:-3.3934106,name:"Mwenga"},
 		{long:28.701999999999998,lat:-0.983957,name:"Pinga"}
 	];
-
 
 	let map = L.map('map').setView([-2.812660, 23.389677], 4);
 
@@ -93,6 +83,7 @@
 
 	const availableStates = ["North Kivu", "Ituri", "South Kivu"];
 
+
 	// control that shows state info on hover
 	var info = L.control();
 
@@ -101,17 +92,18 @@
 		this.update();
 		return this._div;
 	};
-	//calculateData("2019", 100, 100);
+
 	info.update = function (props) {
 		if(!props){
 			return
 		}
 		//console.log(props.name);
 		info._div.innerHTML = '<h4>Total Deaths</h4>' +  (props ?
-				'<b>' + props.name + '</b><br />' + statesData.features[0].properties.total_deaths + ' deaths <br />' + statesData.features[0].properties.confirmed_cases + ' cases'
+				'<b>' + props.name + '</b><br />' + props.total_deaths + ' deaths <br />' + props.confirmed_cases + ' cases'
 				: 'Hover over a state');
 	};
 	info.addTo(map);
+
 
 	// get color depending on population total_deaths value
 	function getColor(d) {
@@ -138,12 +130,11 @@
 	}
 
 	function highlightFeature(e) {
-		var layer = e.target;
+		let layer = e.target;
 
 		layer.setStyle({
 			weight: 5,
 			color: '#ff000f',
-			dashArray: '',
 			fillOpacity: 0.7
 		});
 
@@ -157,7 +148,14 @@
 	var geojson;
 
 	function resetHighlight(e) {
-		geojson.resetStyle(e.target);
+		let layer = e.target;
+		//console.log(layer)
+		geojson.resetStyle(layer);
+
+		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+			layer.bringToBack();
+		}
+
 		info.update();
 	}
 
@@ -205,18 +203,6 @@
 
 	legend.addTo(map);
 
-
-	for (var t = 0; t<markers.length;t++){
-		L.circle([markers[t].lat, markers[t].long], 800, {
-			color: 'red',
-			fillColor: '#f03',
-			fillOpacity: 0.5
-		}).addTo(map).bindPopup(markers[t].name);
-	}
-
-
-
-
 	// DATE SLIDER
 	let dataTime = d3.range(7, 21).map(function(d) {
 		return new Date(2018, d, 1);
@@ -230,14 +216,13 @@
 			.width(document.getElementsByTagName('body')[0].clientWidth-60)
 			.tickFormat(d3.timeFormat('%b %Y'))
 			.tickValues(dataTime)
-			// .attr('width', document.getElementsByClassName('body')[0].clientWidth)
 			.default(new Date(2016, 1, 1))
 			.on('onchange', val => {
 				d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
 				filterDataByDate(val, 0, 0, () => {
 					updateStateAttr();
 				});
-
+				resetColors()
 			});
 
 	let gTime = d3
@@ -247,11 +232,8 @@
 			.attr('height', 100)
 			.append('g')
 			.attr('transform', 'translate(30,30)');
-
 	gTime.call(sliderTime);
-
 	d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
-
 
 	function updateStateAttr() {
 		//console.log('features length:' + statesData.features.length)
@@ -259,10 +241,14 @@
 			if (availableStates.includes(statesData.features[i].properties.name)) {
 				// statesData.features[i].properties.confirmed_cases = provinceData.confirmed_cases;
 				// statesData.features[i].properties.total_deaths = provinceData.total_deaths;
-				console.log("confirmed cases for " + statesData.features[i].properties.name + ": " + statesData.features[i].properties.confirmed_cases)
-				console.log("total deaths for " + statesData.features[i].properties.name + ": " + statesData.features[i].properties.total_deaths)
+				console.log("confirmed cases for " + statesData.features[i].properties.name + ": " + statesData.features[i].properties.confirmed_cases);
+				console.log("total deaths for " + statesData.features[i].properties.name + ": " + statesData.features[i].properties.total_deaths);
+
+				resetColors(statesData.features[i].properties.name)
+
 			}
 		}
+
 	}
 
 	function filterDataByDate(date, max1, max2, cb){
@@ -278,9 +264,7 @@
 					let monthWrapper = moment(d).format("MM");
 					let yearWrapper = moment(d).format("YYYY");
 					let datum = moment(d).format("DD-MM-YYYY");
-
 					if (availableStates.includes(json[i].province) && yearWrapper === date.getFullYear().toString() && parseInt(monthWrapper) == (date.getMonth() + 1).toString()) {
-
 						for(let j = 0; j < statesData.features.length; j++){
 							if(json[i].province===statesData.features[j].properties.name){
 								statesData.features[j].properties.confirmed_cases += parseInt(json[i].confirmed_cases);
@@ -288,12 +272,20 @@
 							}
 						}
 					}
-
 				}
 			}
 			cb(statesData)
 		});
 
+	}
+
+	function resetColors(name) {
+		let layers = geojson.getLayers()
+		for (let i=0; i < layers.length; i++) {
+			if (layers[i].feature.properties.name === name) {
+				geojson.resetStyle(layers[i]);
+			}
+		}
 	}
 
 	function calculateData(date1, max1, max2, cb){
@@ -309,9 +301,7 @@
 					let monthWrapper = moment(d).format("MM");
 					let yearWrapper = moment(d).format("YYYY");
 					let datum = moment(d).format("DD-MM-YYYY");
-
 					if (availableStates.includes(json[i].province) && yearWrapper === date1) {
-
 						for(let j = 0; j < statesData.features.length; j++){
 							if(json[i].province===statesData.features[j].properties.name){
 								statesData.features[j].properties.confirmed_cases += parseInt(json[i].confirmed_cases);
@@ -319,12 +309,19 @@
 							}
 						}
 					}
-
 				}
 			}
 			cb(statesData)
 		});
+	}
 
+	for (let t = 0; t<markers.length;t++){
+		L.circle([markers[t].lat, markers[t].long], 1000, {
+			color: 'red',
+			fillColor: '#f03',
+			fillOpacity: 0.5
+
+		}).addTo(map).bindPopup(markers[t].name);
 	}
 
 
