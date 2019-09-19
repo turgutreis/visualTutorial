@@ -71,6 +71,8 @@
 		{long:28.701999999999998,lat:-0.983957,name:"Pinga"}
 	];
 
+	var circles = {};
+
 	let map = L.map('map').setView([-2.812660, 23.389677], 4);
 
 	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -82,7 +84,6 @@
 	}).addTo(map);
 
 	const availableStates = ["North Kivu", "Ituri", "South Kivu"];
-
 
 	// control that shows state info on hover
 	var info = L.control();
@@ -165,8 +166,8 @@
 
 	function onEachFeature(feature, layer) {
 		layer.on({
-			mouseover: highlightFeature,
-			mouseout: resetHighlight,
+			//mouseover: highlightFeature,
+			//mouseout: resetHighlight,
 			click: zoomToFeature
 		});
 	}
@@ -203,6 +204,11 @@
 
 	legend.addTo(map);
 
+
+	var layerGroup = L.layerGroup().addTo(map);
+
+
+
 	// DATE SLIDER
 	let dataTime = d3.range(7, 21).map(function(d) {
 		return new Date(2018, d, 1);
@@ -222,8 +228,8 @@
 				filterDataByDate(val, 0, 0, () => {
 					updateStateAttr();
 				});
-				calculateCityData(val, 0,0);
 				resetColors()
+				calculateCityData(val);
 			});
 
 	let gTime = d3
@@ -251,9 +257,6 @@
 		}
 
 	}
-
-
-
 
 	function filterDataByDate(date, max1, max2, cb){
 		for(let i = 0; i < statesData.features.length; i++){
@@ -292,39 +295,61 @@
 		}
 	}
 
-	function calculateCityData(date1, max1, max2){
+	function calculateCityData(date1){
 		let sumCases = 0;
 		let sumDeath = 0;
+		let dayWrapper = "";
+		let monthWrapper = "";
+		let yearWrapper = "";
+		let datum = "";
+
+		map.removeLayer(layerGroup);
+		layerGroup = L.layerGroup().addTo(map);
+
 		d3.json("data/csvjson.json", function(json) {
 			for (let i = 0; i < json.length; i++) {
-				if (json[i].confirmed_cases !== "" && json[i].total_deaths !== "" && json[i].confirmed_cases > max1 && json[i].total_deaths > max2) {
 					let d = new Date(json[i].report_date);
-					let dayWrapper = moment(d).format("DD");
-					let monthWrapper = moment(d).format("MM");
-					let yearWrapper = moment(d).format("YYYY");
-					let datum = moment(d).format("DD-MM-YYYY");
-					for (let t = 0; t<markers.length;t++){
-						if (markers[t].name.includes(json[i].health_zone) && yearWrapper === date1.getFullYear().toString() && parseInt(monthWrapper) == (date1.getMonth() + 1).toString()) {
-							sumCases += parseInt(json[i].confirmed_cases);
-							sumDeath += parseInt(json[i].total_deaths);
-							L.circle([markers[t].lat, markers[t].long],sumCases , {
-								color: 'red',
-								fillColor: getColor(sumCases),
-								fillOpacity: 1
+					dayWrapper = moment(d).format("DD");
+					monthWrapper = moment(d).format("MM");
+					yearWrapper = moment(d).format("YYYY");
+					datum = moment(d).format("DD-MM-YYYY");
+				if (json[i].confirmed_cases !== "" && json[i].total_deaths !== "" && yearWrapper === date1.getFullYear().toString() && parseInt(monthWrapper) == (date1.getMonth() + 1).toString()) {
+					sumCases += parseInt(json[i].confirmed_cases);
+					sumDeath += parseInt(json[i].total_deaths);
+				}
+				for (let t = 0; t<markers.length;t++){
+					if (markers[t].name === json[i].health_zone){
 
-							}).addTo(map).bindPopup(markers[t].name);
+						//console.log(sumCases);
+						var radius = 10000;
+						/*if (sumCases >= 1 && sumCases <= 500) {
+							radius = 100
+						} else if (sumCases >= 501 && sumCases <= 1000) {
+							radius = 200
+						} else if (sumCases >= 1001 && sumCases <= 1500) {
+							radius = 300
+						} else if (sumCases >= 1501 && sumCases <= 2000) {
+							radius = 400
+						} else {
+							radius = 500
+						}*/
 
-
-						}
-
+						var c =	L.circle([markers[t].lat, markers[t].long],radius , {
+							color: 'white',
+							fillColor: getColor(sumCases),
+							fillOpacity: 1,
+						}).addTo(layerGroup).bindPopup(markers[t].name);
+						//circles[markers[t].name] = c
 					}
-
-
-
 				}
 			}
+			/*for (var key in circles) {
+				var circle = circles[key]
+				circle.addTo(map).bindPopup(key)
+			}*/
 		});
 	}
+
 
 
 
