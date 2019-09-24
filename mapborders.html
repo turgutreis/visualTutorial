@@ -23,17 +23,23 @@
 
 	<style>#map { width: 100%; height: 100%; }
 .info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
-.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; } #dateSlider{position: absolute;bottom: 0px;left: 0px; z-index:401;  background: rgba(255,255,255,0.8); width: 100%; } .info.legend.leaflet-control { bottom: 100px; }</style>
+.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; } #dateSlider{position: absolute;bottom: 0px;left: 0px; z-index:401;  background: rgba(255,255,255,0.8); width: 100%; } .info.legend.leaflet-control  { bottom: 100px; }  circle { z-index: 500; } </style>
 </head>
 <body>
-<div id='map'>
-	<div id="dateSlider">
 
+<div id='map'>
+
+
+	<div id = "svgcontainer"> </div>
+
+	<div id="dateSlider">
 		<div class="row align-items-center">
 			<div class="col-sm"><div id="slider-time"></div></div>
 		</div>
-
 	</div>
+
+
+
 </div>
 
 <script type="text/javascript" src="data/congocountries.js"></script>
@@ -70,10 +76,9 @@
 		{long:28.310608945254,lat:-3.3934106,name:"Mwenga"},
 		{long:28.701999999999998,lat:-0.983957,name:"Pinga"}
 	];
-
-	var circles = {};
-
 	let map = L.map('map').setView([-2.812660, 23.389677], 4);
+
+
 
 	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 		maxZoom: 18,
@@ -82,6 +87,9 @@
 			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 		id: 'mapbox.light'
 	}).addTo(map);
+
+	// Add a svg layer to the map
+	L.svg().addTo(map);
 
 	const availableStates = ["North Kivu", "Ituri", "South Kivu"];
 
@@ -106,14 +114,16 @@
 	info.addTo(map);
 
 
+
+
 	// get color depending on population total_deaths value
 	function getColor(d) {
-		return d > 8000 ? '#800026' :
-				d > 5000  ? '#BD0026' :
-				d > 4000 ? '#E31A1C' :
-				d > 3000 ? '#FC4E2A' :
-				d > 2000   ? '#FD8D3C' :
-				d > 1000   ? '#FEB24C' :
+		return d > 5000 ? '#800026' :
+				d > 4000  ? '#BD0026' :
+				d > 3000 ? '#E31A1C' :
+				d > 2000 ? '#FC4E2A' :
+				d > 1000   ? '#FD8D3C' :
+				d > 500   ? '#FEB24C' :
 				d > 0   ? '#FED976' :
 							'#FFEDA0';
 	}
@@ -129,6 +139,17 @@
 		};
 
 	}
+
+
+	// Function that update circle position if something change
+	function update() {
+		d3.selectAll("circle")
+				.attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
+				.attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
+	}
+
+	// If the user change the map (zoom or drag), I update circle position:
+	map.on("moveend", update);
 
 	function highlightFeature(e) {
 		let layer = e.target;
@@ -177,7 +198,7 @@
 		onEachFeature: onEachFeature
 	}).addTo(map);
 
-	map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
+	map.attributionControl.addAttribution('Ebola Cases Data &copy; <a href="http://census.gov/">KONGO</a>');
 
 	// LEGENDE
 	var legend = L.control({position: 'bottomright'});
@@ -185,7 +206,7 @@
 	legend.onAdd = function (map) {
 
 		var div = L.DomUtil.create('div', 'info legend'),
-			grades = [0, 1000, 2000, 3000, 4000, 5000, 8000],
+			grades = [1, 500, 1000, 2000, 3000, 4000, 5000],
 			labels = [],
 			from, to;
 
@@ -207,7 +228,7 @@
 
 	var layerGroup = L.layerGroup().addTo(map);
 
-
+	/*############################################################################################################################################*/
 
 	// DATE SLIDER
 	let dataTime = d3.range(7, 21).map(function(d) {
@@ -228,13 +249,14 @@
 				filterDataByDate(val, 0, 0, () => {
 					updateStateAttr();
 				});
-				resetColors()
-				calculateCityData(val);
+				resetColors();
+				calculateCityData(val, 0);
 			});
 
 	let gTime = d3
 			.select('div#slider-time')
 			.append('svg')
+			.attr('id', 'sliderTimeline')
 			.attr('width', '100%')
 			.attr('height', 100)
 			.append('g')
@@ -242,6 +264,9 @@
 	gTime.call(sliderTime);
 	d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
 
+	/*############################################################################################################################################*/
+	/*##################################################     ########################################################*/
+	/*############################################################################################################################################*/
 	function updateStateAttr() {
 		//console.log('features length:' + statesData.features.length)
 		for (let i = 0; i < statesData.features.length; i++) {
@@ -295,17 +320,15 @@
 		}
 	}
 
-	function calculateCityData(date1){
+	function calculateCityData(date1, max){
 		let sumCases = 0;
 		let sumDeath = 0;
 		let dayWrapper = "";
 		let monthWrapper = "";
 		let yearWrapper = "";
 		let datum = "";
-
 		map.removeLayer(layerGroup);
 		layerGroup = L.layerGroup().addTo(map);
-
 		d3.json("data/csvjson.json", function(json) {
 			for (let i = 0; i < json.length; i++) {
 					let d = new Date(json[i].report_date);
@@ -313,48 +336,63 @@
 					monthWrapper = moment(d).format("MM");
 					yearWrapper = moment(d).format("YYYY");
 					datum = moment(d).format("DD-MM-YYYY");
-				if (json[i].confirmed_cases !== "" && json[i].total_deaths !== "" && yearWrapper === date1.getFullYear().toString() && parseInt(monthWrapper) == (date1.getMonth() + 1).toString()) {
+				if (json[i].confirmed_cases !== "" && json[i].total_deaths !== "" && yearWrapper === date1.getFullYear().toString() && parseInt(monthWrapper) == (date1.getMonth() + 1).toString() && json[i].confirmed_cases > max ) {
 					sumCases += parseInt(json[i].confirmed_cases);
 					sumDeath += parseInt(json[i].total_deaths);
 				}
 				for (let t = 0; t<markers.length;t++){
 					if (markers[t].name === json[i].health_zone){
-
-						//console.log(sumCases);
 						var radius = 10000;
-						/*if (sumCases >= 1 && sumCases <= 500) {
-							radius = 100
-						} else if (sumCases >= 501 && sumCases <= 1000) {
-							radius = 200
-						} else if (sumCases >= 1001 && sumCases <= 1500) {
-							radius = 300
-						} else if (sumCases >= 1501 && sumCases <= 2000) {
-							radius = 400
-						} else {
-							radius = 500
-						}*/
-
-						var c =	L.circle([markers[t].lat, markers[t].long],radius , {
+							L.circle([markers[t].lat, markers[t].long],radius , {
 							color: 'white',
 							fillColor: getColor(sumCases),
 							fillOpacity: 1,
-						}).addTo(layerGroup).bindPopup(markers[t].name);
-						//circles[markers[t].name] = c
+						}).addTo(layerGroup).bindPopup(markers[t].name+ "<br>" +sumCases);
 					}
 				}
 			}
-			/*for (var key in circles) {
-				var circle = circles[key]
-				circle.addTo(map).bindPopup(key)
-			}*/
 		});
 	}
 
+	//###############################################SVG D3#####################################################################
+	function test(date2) {
+		let sumCases = 0;
+		let sumDeath = 0;
+		let dayWrapper = "";
+		let monthWrapper = "";
+		let yearWrapper = "";
+		let datum = "";
+		d3.json("data/csvjson.json", function(json) {
+		// Select the svg area and add circles:
+			for (let i = 0; i < json.length; i++) {
+				let d = new Date(json[i].report_date);
+				dayWrapper = moment(d).format("DD");
+				monthWrapper = moment(d).format("MM");
+				yearWrapper = moment(d).format("YYYY");
+				datum = moment(d).format("DD-MM-YYYY");
+				if (json[i].confirmed_cases !== "" && json[i].total_deaths !== "" && yearWrapper === date2.getFullYear().toString() && parseInt(monthWrapper) == (date2.getMonth() + 1).toString()) {
+					sumCases += parseInt(json[i].confirmed_cases);
+					sumDeath += parseInt(json[i].total_deaths);
+				}
+			}
+		});
+		d3.select("#map")
+				.select("#svgcontainer")
+				.selectAll("myCircles")
+				.data(markers)
+				.enter()
+				.append("circle")
+				.attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
+				.attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
+				.attr("r", 14)
+				.style("fill", getColor(sumCases))
+				.attr("stroke", "red")
+				.attr("stroke-width", 3)
+				.attr("fill-opacity", .4);
 
+	}
 
-
-
-
+	//test();
 
 </script>
 
