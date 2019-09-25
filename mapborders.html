@@ -23,7 +23,7 @@
 
 	<style>#map { width: 100%; height: 100%; }
 .info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
-.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; } #dateSlider{position: absolute;bottom: 0px;left: 0px; z-index:401;  background: rgba(255,255,255,0.8); width: 100%; } .info.legend.leaflet-control  { bottom: 100px; }  circle { z-index: 500; } </style>
+.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 30px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; } #dateSlider{position: absolute;bottom: 0px;/*left: 0px;*/ z-index:401;  background: rgba(255,255,255,0.8); width: 100%; } #sliderTimeline{ transform: scale(0.98);} .info.legend.leaflet-control  { bottom: 100px; width: 160px; height: 200px; font-size: 20px;} .info.legend.leaflet-control br { display: block; margin: 5px 0;}  circle { z-index: 500; } .parameter-value text, .tick text {font-size: 15px;} g.tick:nth-child(1) > text:nth-child(2) { transform: translate(25px);} g.tick:nth-last-child(1) > text:nth-child(2) { transform: translate(-25px); } .parameter-value > text:nth-child(2){ font-size: 18px; fill: mediumvioletred;} </style>
 </head>
 <body>
 
@@ -32,19 +32,19 @@
 
 	<div id = "svgcontainer"> </div>
 
-	<div id="dateSlider">
-		<div class="row align-items-center">
-			<div class="col-sm"><div id="slider-time"></div></div>
-		</div>
+
+</div>
+<div id="dateSlider">
+	<div class="row align-items-center">
+		<div class="col-sm"><div id="slider-time"></div></div>
 	</div>
-
-
-
 </div>
 
 <script type="text/javascript" src="data/congocountries.js"></script>
 <script src="js/moment.min.js"></script>
 <script type="text/javascript">
+
+
 
 	var markers = [
 		{long: 29.15618, lat: -0.36879, name: "Alimbongo"}, // corsica
@@ -77,8 +77,6 @@
 		{long:28.701999999999998,lat:-0.983957,name:"Pinga"}
 	];
 	let map = L.map('map').setView([-2.812660, 23.389677], 4);
-
-
 
 	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 		maxZoom: 18,
@@ -114,8 +112,6 @@
 	info.addTo(map);
 
 
-
-
 	// get color depending on population total_deaths value
 	function getColor(d) {
 		return d > 5000 ? '#800026' :
@@ -124,7 +120,7 @@
 				d > 2000 ? '#FC4E2A' :
 				d > 1000   ? '#FD8D3C' :
 				d > 500   ? '#FEB24C' :
-				d > 0   ? '#FED976' :
+				d > 1   ? '#FED976' :
 							'#FFEDA0';
 	}
 
@@ -140,16 +136,16 @@
 
 	}
 
-
+/*
 	// Function that update circle position if something change
 	function update() {
 		d3.selectAll("circle")
 				.attr("cx", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).x })
 				.attr("cy", function(d){ return map.latLngToLayerPoint([d.lat, d.long]).y })
 	}
-
+*/
 	// If the user change the map (zoom or drag), I update circle position:
-	map.on("moveend", update);
+	//map.on("moveend", update);
 
 	function highlightFeature(e) {
 		let layer = e.target;
@@ -160,10 +156,11 @@
 			fillOpacity: 0.7
 		});
 
+		/*
 		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
 			layer.bringToFront();
 		}
-
+		*/
 		info.update(layer.feature.properties);
 	}
 
@@ -171,13 +168,12 @@
 
 	function resetHighlight(e) {
 		let layer = e.target;
-		//console.log(layer)
 		geojson.resetStyle(layer);
-
+		/*
 		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
 			layer.bringToBack();
 		}
-
+		*/
 		info.update();
 	}
 
@@ -187,8 +183,8 @@
 
 	function onEachFeature(feature, layer) {
 		layer.on({
-			//mouseover: highlightFeature,
-			//mouseout: resetHighlight,
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
 			click: zoomToFeature
 		});
 	}
@@ -227,9 +223,9 @@
 
 
 	var layerGroup = L.layerGroup().addTo(map);
-
 	/*############################################################################################################################################*/
-
+	/*############################################################################################################################################*/
+	/*############################################################################################################################################*/
 	// DATE SLIDER
 	let dataTime = d3.range(7, 21).map(function(d) {
 		return new Date(2018, d, 1);
@@ -245,6 +241,17 @@
 			.tickValues(dataTime)
 			.default(new Date(2016, 1, 1))
 			.on('onchange', val => {
+
+				const parameterValue = document.getElementsByClassName('parameter-value')[0];
+				if(parameterValue.getAttribute('transform')==='translate(0,0)'){
+					const sliderText = document.querySelector('.parameter-value > text:nth-child(2)')
+					sliderText.setAttribute('style', 'transform:translate(25px);')
+				}else{
+					const sliderText = document.querySelector('.parameter-value > text:nth-child(2)')
+					sliderText.setAttribute('style', 'transform:translate(-25px);')
+				}
+
+
 				d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
 				filterDataByDate(val, 0, 0, () => {
 					updateStateAttr();
@@ -265,7 +272,7 @@
 	d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
 
 	/*############################################################################################################################################*/
-	/*##################################################     ########################################################*/
+	/*############################################################################################################################################*/
 	/*############################################################################################################################################*/
 	function updateStateAttr() {
 		//console.log('features length:' + statesData.features.length)
@@ -312,7 +319,7 @@
 	}
 
 	function resetColors(name) {
-		let layers = geojson.getLayers()
+		let layers = geojson.getLayers();
 		for (let i=0; i < layers.length; i++) {
 			if (layers[i].feature.properties.name === name) {
 				geojson.resetStyle(layers[i]);
@@ -327,6 +334,9 @@
 		let monthWrapper = "";
 		let yearWrapper = "";
 		let datum = "";
+		let circles = [];
+		let renderedCities = [];
+
 		map.removeLayer(layerGroup);
 		layerGroup = L.layerGroup().addTo(map);
 		d3.json("data/csvjson.json", function(json) {
@@ -340,21 +350,37 @@
 					sumCases += parseInt(json[i].confirmed_cases);
 					sumDeath += parseInt(json[i].total_deaths);
 				}
+
 				for (let t = 0; t<markers.length;t++){
-					if (markers[t].name === json[i].health_zone){
-						var radius = 10000;
-							L.circle([markers[t].lat, markers[t].long],radius , {
-							color: 'white',
-							fillColor: getColor(sumCases),
-							fillOpacity: 1,
-						}).addTo(layerGroup).bindPopup(markers[t].name+ "<br>" +sumCases);
+					if (markers[t].name === json[i].health_zone && date1.getFullYear().toString() === yearWrapper && (date1.getMonth()+1).toString() == parseInt(monthWrapper) && !renderedCities.includes(markers[t].name)){
+						circles.push({
+							key:   sumCases,
+							value: markers[t]
+						});
+						renderedCities.push(markers[t].name);
 					}
+
 				}
 			}
+
+			for (var index=circles.length; index-- > 0;) {
+				var sum = circles[index].key;
+				var marker = circles[index].value;
+
+				console.log(marker)
+				L.circle([marker.lat, marker.long], sum*8 , {
+					color: 'white',
+					fillColor: getColor(sum),
+					fillOpacity: 0.8,
+				}).addTo(layerGroup).bindPopup(marker.name+ "<br>" +sum);
+			}
 		});
+
+
 	}
 
-	//###############################################SVG D3#####################################################################
+	//############################################### SVG D3 ########################################################################################
+	/*############################################################################################################################################*/
 	function test(date2) {
 		let sumCases = 0;
 		let sumDeath = 0;
@@ -392,7 +418,11 @@
 
 	}
 
-	//test();
+	const parameterValue = document.getElementsByClassName('parameter-value')[0];
+	if(parameterValue.getAttribute('transform')==='translate(0,0)'){
+		const sliderText = document.querySelector('.parameter-value > text:nth-child(2)')
+		sliderText.setAttribute('style', 'transform:translate(25px);')
+	}
 
 </script>
 
