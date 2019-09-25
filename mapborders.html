@@ -295,7 +295,7 @@
 			statesData.features[i].properties.confirmed_cases = 0;
 			statesData.features[i].properties.total_deaths = 0;
 		}
-		d3.json("data/ebolacases.json", function(json) {
+		d3.json("data/jsonfiles/ebolacases.json", function(json) {
 			for (let i = 0; i < json.length; i++) {
 				if (json[i].confirmed_cases !== "" && json[i].total_deaths !== "" && json[i].confirmed_cases > max1 && json[i].total_deaths > max2) {
 					let d = new Date(json[i].report_date);
@@ -339,7 +339,7 @@
 
 		map.removeLayer(layerGroup);
 		layerGroup = L.layerGroup().addTo(map);
-		d3.json("data/ebolacases.json", function(json) {
+		d3.json("data/jsonfiles/ebolacases.json", function(json) {
 			for (let i = 0; i < json.length; i++) {
 					let d = new Date(json[i].report_date);
 					dayWrapper = moment(d).format("DD");
