@@ -105,7 +105,7 @@
 			return
 		}
 		//console.log(props.name);
-		info._div.innerHTML = '<h4>Total Deaths</h4>' +  (props ?
+		info._div.innerHTML = '<h4>EBOLA CASES</h4>' +  (props ?
 				'<b>' + props.name + '</b><br />' + props.total_deaths + ' deaths <br />' + props.confirmed_cases + ' cases'
 				: 'Hover over a state');
 	};
@@ -295,7 +295,7 @@
 			statesData.features[i].properties.confirmed_cases = 0;
 			statesData.features[i].properties.total_deaths = 0;
 		}
-		d3.json("data/csvjson.json", function(json) {
+		d3.json("data/ebolacases.json", function(json) {
 			for (let i = 0; i < json.length; i++) {
 				if (json[i].confirmed_cases !== "" && json[i].total_deaths !== "" && json[i].confirmed_cases > max1 && json[i].total_deaths > max2) {
 					let d = new Date(json[i].report_date);
@@ -339,7 +339,7 @@
 
 		map.removeLayer(layerGroup);
 		layerGroup = L.layerGroup().addTo(map);
-		d3.json("data/csvjson.json", function(json) {
+		d3.json("data/ebolacases.json", function(json) {
 			for (let i = 0; i < json.length; i++) {
 					let d = new Date(json[i].report_date);
 					dayWrapper = moment(d).format("DD");
@@ -355,6 +355,7 @@
 					if (markers[t].name === json[i].health_zone && date1.getFullYear().toString() === yearWrapper && (date1.getMonth()+1).toString() == parseInt(monthWrapper) && !renderedCities.includes(markers[t].name)){
 						circles.push({
 							key:   sumCases,
+							key2:  sumDeath,
 							value: markers[t]
 						});
 						renderedCities.push(markers[t].name);
@@ -365,14 +366,14 @@
 
 			for (var index=circles.length; index-- > 0;) {
 				var sum = circles[index].key;
+				var sumDe = circles[index].key2;
 				var marker = circles[index].value;
-
-				console.log(marker)
+				//console.log(marker)
 				L.circle([marker.lat, marker.long], sum*8 , {
 					color: 'white',
 					fillColor: getColor(sum),
 					fillOpacity: 0.8,
-				}).addTo(layerGroup).bindPopup(marker.name+ "<br>" +sum);
+				}).addTo(layerGroup).bindPopup(marker.name+ "<br>" +sum+ "<br>" +sumDe);
 			}
 		});
 
@@ -388,7 +389,7 @@
 		let monthWrapper = "";
 		let yearWrapper = "";
 		let datum = "";
-		d3.json("data/csvjson.json", function(json) {
+		d3.json("data/ebolacases.json", function(json) {
 		// Select the svg area and add circles:
 			for (let i = 0; i < json.length; i++) {
 				let d = new Date(json[i].report_date);
@@ -420,7 +421,7 @@
 
 	const parameterValue = document.getElementsByClassName('parameter-value')[0];
 	if(parameterValue.getAttribute('transform')==='translate(0,0)'){
-		const sliderText = document.querySelector('.parameter-value > text:nth-child(2)')
+		const sliderText = document.querySelector('.parameter-value > text:nth-child(2)');
 		sliderText.setAttribute('style', 'transform:translate(25px);')
 	}
 

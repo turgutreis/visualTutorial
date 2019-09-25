@@ -37,7 +37,7 @@
         };
     };
 
-    d3.json("data/csvjson.json", rowConverter, function (data) {
+    d3.json("data/ebolacases.json", rowConverter, function (data) {
         d3.select("body").selectAll("p")
             .data(data)
             .enter()
